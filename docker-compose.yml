@@ -1,0 +1,50 @@
+version: '3.9'
+
+networks:
+  mysql_net:
+    name: mysql_net
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "811105"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./DB/mysql/data:/var/lib/mysql:z
+    networks:
+      - mysql_net
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: "811105"
+    ports:
+      - "8081:80"
+    volumes:
+      - ./DB/phpmyadmin/config/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php:z
+      - ./DB/phpmyadmin/boodark:/var/www/html/themes/boodark:z
+    depends_on:
+      - mysql
+    networks:
+      - mysql_net
+  maquila_app:
+    build:
+      context: ./maquila
+    container_name: maquila_app
+    restart: always
+    ports:
+      - "9000:80"
+    volumes:
+      # 1. Mantenemos el bind mount para el código fuente
+      - ./maquila:/var/www/html:z
+    networks:
+      - mysql_net
