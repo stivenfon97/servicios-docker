@@ -1,4 +1,3 @@
-version: '3.9'
 
 networks:
   mysql_net:
@@ -36,6 +35,7 @@ services:
       - mysql
     networks:
       - mysql_net
+
   maquila_app:
     build:
       context: ../maquila/
